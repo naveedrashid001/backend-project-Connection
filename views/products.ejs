@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>product</title>
+</head>
+<body>
+     <!-- <script>const products=require("./model/index")</script> -->
+    <h1>product</h1>
+    <table border="1px">
+        <tr>
+            <td>ID</td>
+            <td>name</td>
+            <td>price</td>
+            <td>createdAt</td>
+            <td>updatedAt</td>
+        </tr>
+        <% for(let i=0; i<products.length; i++){ %> 
+        <tr>
+            <td> <%= i+1 %> </td>
+            <td> <%= products[i].name %> </td>
+            <td> <%= products[i].price %> </td>
+            <td> <%= products[i].createdAt %> </td>
+            <td> <%= products[i].updatedAt %> </td>
+        </tr>
+        <% } %>
+    </table>
+</body>
+</html>
