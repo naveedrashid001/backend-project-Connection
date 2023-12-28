@@ -13,9 +13,6 @@ router.post('/login', userController.log_in);
 //////  get your profile
 router.get('/me/:userid',isAuthenticated, userController.profile);
 
-/////// get single user from the database
-router.route('/users/:userid').get(userController.singleUser);
-
 ////// delete your account
 router.route('/me/:userid').delete(userController.delete_profile);
 

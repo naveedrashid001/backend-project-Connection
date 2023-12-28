@@ -45,34 +45,6 @@ module.exports = {
                 res.status(404).send(err.message || "somewent wrong")
             }
         },
-    singleUser:   ////// get single user from the database
-        async function (req, res) {
-            try {
-                let { userid } = req.params;
-                userid = Number(userid);
-                const user = await Users.findByPk(userid, {
-                    include: [{
-                        model: Courses,
-                        as: 'courses',
-                        attributes: ["id", "title"]
-                    }, {
-                        model: Playlists,
-                        as: 'playlists',
-                        attributes: ["id"]
-                    },]
-                }
-                );
-                if (!user) {
-                    return res.status(409).send("userid isent avalible")
-                }
-                res.status(200).send("single user");
-
-            } catch (err) {
-                console.log(err);
-                res.status(404).send(err.message || "somewent wrong")
-            }
-        },
-
     log_in:  //////// login account
         async function (req, res, next) {
             try {
@@ -175,23 +147,27 @@ module.exports = {
             try {
                 const { user } = req;
                 const { password } = req.body;
+
                 if (!password) {
-                    return res.status(409).send("please change your password..!! send it in req.body");
+                    return res.status(409).send("Please provide a new password in the request body.");
                 }
-                const hashpassword = await bycrpt.hash(password, 12);
-                const updatedUser = await user.update({
-                    password: hashpassword,
-                    // password   ///// i have commentOut hashPassword and cheek it.! it work sucessfuly !!!
-                }, {
-                    where: {
-                        id: user.id
-                    },
-                    // fields: ['password']
-                });
+
+                const hashPassword = await bycrpt.hash(password, 12);
+
+                const updatedUser = await user.update(
+                    { password: hashPassword },
+                    {
+                        where: {
+                            id: user.id,
+                        },
+                    }
+                );
+
                 res.status(201).send({
-                    message: "password changed sucessfuly",
+                    message: "Password changed successfully",
                     updatedUser,
                 });
+
             } catch (err) {
                 console.log(err);
                 res.status(404).send(err.message || "somewent wrong")
@@ -217,7 +193,15 @@ module.exports = {
             const { user } = req;
             const { role } = req;
             const { userRole } = req.body;
-            const updatedUser = await Users.update({
+            const findrole = await Users.findByPk(userRole, {
+                where: {
+                    id: userRole,
+                }
+            })
+            if (!findrole) {
+                return res.status(404).send("user id not font in the database which you want to update role")
+            }
+            await Users.update({
                 role,
             }, {
                 where: {
@@ -225,12 +209,12 @@ module.exports = {
                 }
             }
             );
-            if(userRole!==Users.id){
-                return res.status(404).send("userId not found in database")
-            }
+            // if (userRole !== Users.id) {
+            //     return res.status(404).send("userId not found in database")
+            // }
             res.status(200).send({
                 message: "User role updated sucessfully",
-                updatedUser: role,
+                userRole
             });
         } catch (err) {
             console.error(err);
@@ -243,16 +227,16 @@ module.exports = {
             const { user } = req;
             const { role } = req;
             const { userId } = req.body;
-            const userid= await Users.findByPk(userId);
-                if (!userid) {
-                    return res.status(404).send("user id not found. which you want to delete")
-                }
+            const userid = await Users.findByPk(userId);
+            if (!userid) {
+                return res.status(404).send("user id not found. which you want to delete")
+            }
             await Users.destroy({
                 where: {
                     id: userId,
                 }
-            } );
-            
+            });
+
             res.status(200).send({
                 message: "User deleted sucessfully",
                 userId,

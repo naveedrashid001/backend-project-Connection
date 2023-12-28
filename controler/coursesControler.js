@@ -7,8 +7,9 @@ module.exports = {
                 const { userid } = req;
                 const { role } = req;
                 const { title, description, fkuserid, category } = req.body;
-                if (fkuserid.length!==Users.id) {
-                    return res.status(404).send("fkuserid not found in the database")
+                const findfkuserid= await Users.findByPk(fkuserid);
+                if (!findfkuserid) {
+                    return res.status(404).send("fkuserid not found in the user database.!!")
                 }
                 const course = await Courses.create({
                     title,
@@ -37,7 +38,7 @@ module.exports = {
             res.status(404).send(err.message || "somewent wrong")
         }
     },
-    getCourseLecture:   ////// get lecture with fkcourseid
+    getCourseLecture:   ////// admain get lecture with fkcourseid
         async (req, res) => {
             try {
                 const { userid } = req;
@@ -52,7 +53,7 @@ module.exports = {
                         ]
                     })
                 if (!course) {
-                    return res.status(404).send("course not found")
+                    return res.status(404).send("course not found in the Course database.!!")
                 }
                 res.status(200).send(course);
             } catch (err) {
@@ -69,7 +70,7 @@ module.exports = {
                 const { title, fkcourseid, description, videoUrl } = req.body;
                 const course =await Courses.findByPk(fkcourseid);
                 if (!course) {
-                    return res.status(404).send("fkcourseid not found")
+                    return res.status(404).send("fkcourseid not found in the Course database!!")
                 }
                 const lecture = await Lectures.create({
                     title,
@@ -93,13 +94,9 @@ module.exports = {
                 const {user}=req;
                 const {role}=req;
                 const {courseid}=req.body;
-               const course= await Courses.findOne({
-                where:{
-                    id:courseid,
-                }
-               });
+               const course= await Courses.findByPk(courseid)
                 if (!course) {
-                    return res.status(404).send("courseid not found in the database")
+                    return res.status(404).send("courseid not found in the Course database")
                 }
                 await course.destroy({
                     where:{
