@@ -200,7 +200,7 @@ module.exports = {
         async (req, res, next) => {
             try {
                 const { user } = req;
-                const { role } = req;
+                const { users } = req;
                 const alluser = await Users.findAll({
                     attributes: ["id", "name", "email"]
                 });
